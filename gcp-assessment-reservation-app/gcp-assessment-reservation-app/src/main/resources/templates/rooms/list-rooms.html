@@ -1,0 +1,139 @@
+<!DOCTYPE HTML>
+<html lang="en" 
+		xmlns:th="http://www.thymeleaf.org"
+		xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  	
+	<title>Rooms Directory</title>
+	
+	<style>
+    /* Remove the navbar's default margin-bottom and rounded borders */ 
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+    
+    /* Add a gray background color and some padding to the footer */
+    footer {
+      background-color: #f2f2f2;
+      padding: 25px;
+    }
+  </style>
+  
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="#">FOX</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+       	<li class="active"><a th:href="@{/rooms/listRoom}">Rooms</a></li>
+        <li sec:authorize="hasAnyRole('ROLE_STAFF', 'ROLE_CLIENT')" class="active" ><a th:href="@{/reservations/listReservation}">My Reservations</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+        	<form action="#" th:action="@{/logout}" 
+			   method="POST">
+				<input type="submit" value="Logout" class="btn btn-outline-primary mt-2" />
+			</form>
+		</li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+	<h3>Rooms Directory</h3>
+	<hr>
+	
+	<div>
+		User: <span sec:authentication="name"></span>
+		<br>
+		Role(s): <span sec:authentication="principal.authorities"></span>
+		<br><br>
+	</div>
+	
+	<a th:href="@{/rooms/showFormForAddRoom}"
+		class="btn btn-primary btn-sm mr-5 mb-3" sec:authorize="hasRole('ROLE_STAFF')">
+		Create Room
+	</a>
+	
+	<a th:href="@{/reservations/showFormForAddReservation(roomId=${id})}"
+		class="btn btn-info btn-sm" sec:authorize="hasAnyRole('ROLE_STAFF', 'ROLE_CLIENT')">
+		Book a room
+	</a>
+
+	<table class="table table-bordered table-striped">
+		<thead class="thead-dark">
+			<tr>
+				<th>Room Id</th>
+				<th>Type</th>
+				<th>Price</th>
+				<th sec:authorize="hasRole('ROLE_STAFF')">Action</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			<tr th:each="tempRoom : ${rooms}">
+			
+				<td th:text="${tempRoom.id}" />	
+				<td th:text="${tempRoom.type}" />	
+				<td th:text="${tempRoom.price}" />	
+				
+				<td>
+					
+					<div sec:authorize="hasRole('ROLE_STAFF')">
+
+						<!-- Add "update" button/link -->
+						<a th:href="@{/rooms/showFormForUpdateRoom(roomId=${tempRoom.id})}"
+						   class="btn btn-info btn-sm">
+							Update
+						</a>
+
+					</div>					
+				
+					<div sec:authorize="hasRole('ROLE_STAFF')">  
+					
+						<!-- Add "delete" button/link -->					
+						<a th:href="@{/rooms/deleteRoom(roomId=${tempRoom.id})}"
+						   class="btn btn-danger btn-sm"
+						   onclick="if (!(confirm('Are you sure you want to delete this room?'))) return false">
+							Delete
+						</a>
+
+					</div>					
+				</td>
+				
+				
+			</tr>
+		</tbody>		
+	</table>
+	
+	
+</div>
+	
+</body>
+</html>
+
+
+
